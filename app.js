@@ -13,6 +13,11 @@ app.use(cors({
     credentials:true
 }))
 
+
+app.get('/',(req,res)=>{
+    res.send('hello')
+})
+
 app.post('/signup',async(req,res)=>{
     const {username, password} = req.body
     try {
