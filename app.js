@@ -1,25 +1,32 @@
-import mongoose from "mongoose";
+import {user} from './server.js'
+import bcrypt from 'bcrypt'
+import express from 'express'
+import cors from 'cors'
 
-mongoose.connect(`mongodb+srv://amitkumbhar9800:${encodeURIComponent('ug9GDQh8wkxIDqJq')}@amit.valjmid.mongodb.net/Social?retryWrites=true&w=majority`)
-.then(()=>{
-    console.log('Connected');
-})
-.catch((error)=>{
-    console.log(error);
-})
+const app = express()
 
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+app.use(cors({
+    origin:'http://localhost:5173',
+    methods:['get','post'],
+    credentials:true
+}))
 
-const newSchema=new mongoose.Schema({
-    username:{
-        type:String,
-        required:true
-    },
-    password:{
-        type:String,
-        required:true
+app.post('/signup',async(req,res)=>{
+    const {username, password} = req.body
+    try {
+        const pass = await bcrypt.hash(password,10)
+        const usr = await user.insertMany({username:username,password:pass})
+        res.send(usr)
+    } catch (error) {
+        console.log("database error");
     }
-    })
+    
+})
 
+// http://localhost:4000/signup
 
-export const user = mongoose.model("users",newSchema);
-
+app.listen(4000,()=>{
+    console.log('server connected');
+})
